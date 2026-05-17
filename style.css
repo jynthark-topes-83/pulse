@@ -196,6 +196,21 @@ body {
   transition: background 0.3s, color 0.3s;
 }
 
+.skin-transition {
+  position: absolute;
+  inset: 0;
+  z-index: 200;
+  background: #08090b;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.22s ease;
+}
+
+.skin-transition.active {
+  opacity: 1;
+  transition: opacity 0.15s ease;
+}
+
 [data-skin="retro"],
 [data-skin="crt"],
 [data-skin="skyline83"],
@@ -644,10 +659,36 @@ body {
   margin: 0;
   border-radius: 0;
   border: none;
+  box-shadow: none;
+  background: transparent;
 }
 
 .focus-mode .safe-area-top {
   display: none;
+}
+
+.focus-mode .home-indicator {
+  display: none;
+}
+
+.focus-mode .counter-value {
+  font-size: clamp(90px, 24vw, 148px);
+}
+
+.focus-mode .counter-value.value-long {
+  font-size: clamp(68px, 18vw, 110px);
+}
+
+.focus-mode .counter-value.value-huge {
+  font-size: clamp(52px, 15vw, 88px);
+}
+
+.focus-mode .counter-value.value-giant {
+  font-size: clamp(38px, 11vw, 64px);
+}
+
+.focus-mode .counter-value.value-massive {
+  font-size: clamp(26px, 8vw, 46px);
 }
 
 .counter-header {

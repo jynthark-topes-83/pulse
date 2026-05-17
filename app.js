@@ -62,6 +62,36 @@ function saveState() {
 function applySkin(skinId, options = {}) {
   const skin = SKINS.find(s => s.id === skinId);
   if (!skin || (skin.hidden && !state.secretSkinUnlocked)) return;
+
+  const overlay = document.getElementById('skin-transition');
+  const isSwitch = state.skin !== skinId;
+
+  if (isSwitch && overlay) {
+    // Use the target skin's bg so the overlay matches what we're transitioning to
+    overlay.style.background = skin.bg;
+    overlay.classList.add('active');
+    setTimeout(() => {
+      document.querySelector('.iphone-frame').setAttribute('data-skin', skinId);
+      if (skinId === 'jynthark' && options.startMusic) {
+        window.PulseAudio?.startOverdriveMusic();
+      } else {
+        window.PulseAudio?.stopOverdriveMusic();
+      }
+      state.skin = skinId;
+      clearVisualEffects();
+      saveState();
+      renderSkinList();
+      document.getElementById('skin-overlay')?.classList.remove('active');
+      // Wait a frame for the new skin to fully paint, then fade out
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          overlay.classList.remove('active');
+        });
+      });
+    }, 200);
+    return;
+  }
+
   document.querySelector('.iphone-frame').setAttribute('data-skin', skinId);
   if (skinId === 'jynthark' && options.startMusic) {
     window.PulseAudio?.startOverdriveMusic();
@@ -574,3 +604,13 @@ function init() {
 }
 
 document.addEventListener('DOMContentLoaded', init);
+
+// Prevent iOS double-tap zoom globally
+let lastTouchEnd = 0;
+document.addEventListener('touchend', (e) => {
+  const now = Date.now();
+  if (now - lastTouchEnd <= 300) {
+    e.preventDefault();
+  }
+  lastTouchEnd = now;
+}, { passive: false });
