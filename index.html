@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Pulse</title>
+  <meta name="theme-color" content="#08090b">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500;600;700;800&family=Inter:wght@500;600;700;800&family=Pixelify+Sans:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="iphone-frame" data-skin="pulse">
+
+    <!-- SESSIONS SCREEN -->
+    <div id="sessions-screen" class="screen active">
+      <div class="safe-area-top"></div>
+      <header class="sessions-header">
+        <div>
+          <h1 class="logo" aria-label="Pulse"><span>pulse</span></h1>
+          <p class="tagline">minimal counter ritual</p>
+        </div>
+        <button id="skin-btn" class="icon-btn skin-toggle" aria-label="Change atmosphere">◐</button>
+      </header>
+
+      <div id="counters-list" class="counters-list">
+        <!-- counter cards rendered here -->
+      </div>
+
+      <div class="add-counter-bar">
+        <input type="text" id="new-counter-name" placeholder="new pulse" maxlength="24" autocomplete="off">
+        <button id="add-counter-btn" class="add-btn">+</button>
+      </div>
+      <p class="copyright">© jynthark-topes-83</p>
+      <div class="home-indicator"></div>
+    </div>
+
+    <!-- COUNTER SCREEN -->
+    <div id="counter-screen" class="screen">
+      <div class="safe-area-top"></div>
+      <header class="counter-header">
+        <button id="back-btn" class="icon-btn" aria-label="Back">‹ back</button>
+        <span id="counter-label" class="counter-label"></span>
+        <button id="delete-btn" class="icon-btn delete" aria-label="Delete">clear</button>
+      </header>
+
+      <div id="counter-zone" class="counter-zone">
+        <div class="pulse-orb" aria-hidden="true"></div>
+        <div id="combo-badge" class="combo-badge" aria-hidden="true">combo ×1</div>
+        <div id="counter-value" class="counter-value">0</div>
+        <div id="milestone-effect" class="milestone-effect" aria-hidden="true">
+          <span class="milestone-number">100</span>
+          <span class="milestone-label">limit break</span>
+        </div>
+        <div id="max-effect" class="max-effect" aria-hidden="true">
+          <span class="max-number">9999</span>
+          <span class="max-label">maximum pulse</span>
+        </div>
+      </div>
+      <div class="home-indicator"></div>
+    </div>
+
+    <!-- SKIN PICKER OVERLAY -->
+    <div id="skin-overlay" class="overlay">
+      <div class="overlay-sheet">
+        <div class="sheet-handle"></div>
+        <h2>atmosphere</h2>
+        <div id="skin-list" class="skin-list"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="audio.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
