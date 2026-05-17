@@ -475,9 +475,21 @@ function setupGestures() {
   zone.addEventListener('contextmenu', (e) => e.preventDefault());
 }
 
+// ===== FOCUS MODE =====
+
+function toggleFocusMode() {
+  const screen = document.getElementById('counter-screen');
+  screen.classList.toggle('focus-mode');
+}
+
+function exitFocusMode() {
+  document.getElementById('counter-screen').classList.remove('focus-mode');
+}
+
 // ===== NAVIGATION =====
 
 function showScreen(name) {
+  exitFocusMode();
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   if (name === 'sessions') {
     document.getElementById('sessions-screen').classList.add('active');
@@ -540,6 +552,14 @@ function init() {
   // Back button
   document.getElementById('back-btn').addEventListener('click', () => {
     showScreen('sessions');
+  });
+
+  // Focus mode
+  document.getElementById('focus-btn').addEventListener('click', () => {
+    toggleFocusMode();
+  });
+  document.getElementById('focus-exit-btn').addEventListener('click', () => {
+    exitFocusMode();
   });
 
   // Delete button
