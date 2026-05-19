@@ -97,6 +97,87 @@ window.PulseAudio = (() => {
     tone({ frequency: 1170, slideTo: 1560, duration: 0.13, type: 'sine', volume: 0.12, delay: 0.12 });
   }
 
+  function comboEffect(config = {}, combo = 1) {
+    const intensity = Math.max(0.4, Math.min(config.intensity || 1, 2));
+    const pitch = Math.max(0.5, Math.min(config.pitch || 1, 2));
+    const type = config.type || 'explosion';
+    const comboLift = Math.min(combo, 40) * 3;
+
+    if (type === 'collapse') {
+      tone({ frequency: (220 + comboLift) * pitch, slideTo: 62 * pitch, duration: 0.32, type: 'sine', volume: 0.14 * intensity });
+      tone({ frequency: 680 * pitch, slideTo: 180 * pitch, duration: 0.22, type: 'triangle', volume: 0.1 * intensity, delay: 0.04 });
+      noise({ duration: 0.2, volume: 0.055 * intensity, delay: 0.02, filter: 520 });
+      return;
+    }
+
+    if (type === 'supernova') {
+      tone({ frequency: 76 * pitch, slideTo: 42 * pitch, duration: 0.42, type: 'sine', volume: 0.24 * intensity });
+      tone({ frequency: 420 * pitch, slideTo: 1180 * pitch, duration: 0.34, type: 'sawtooth', volume: 0.12 * intensity, delay: 0.03 });
+      tone({ frequency: 840 * pitch, slideTo: 1680 * pitch, duration: 0.3, type: 'triangle', volume: 0.1 * intensity, delay: 0.1 });
+      noise({ duration: 0.38, volume: 0.09 * intensity, delay: 0.02, filter: 2100 });
+      noise({ duration: 0.16, volume: 0.045 * intensity, delay: 0.17, filter: 6200 });
+      return;
+    }
+
+    if (type === 'thunder-break') {
+      tone({ frequency: 1480 * pitch, slideTo: 360 * pitch, duration: 0.075, type: 'square', volume: 0.09 * intensity });
+      tone({ frequency: 740 * pitch, slideTo: 120 * pitch, duration: 0.16, type: 'sawtooth', volume: 0.08 * intensity, delay: 0.045 });
+      tone({ frequency: 62 * pitch, slideTo: 42 * pitch, duration: 0.22, type: 'sine', volume: 0.2 * intensity, delay: 0.08 });
+      noise({ duration: 0.11, volume: 0.09 * intensity, delay: 0.01, filter: 6800 });
+      noise({ duration: 0.18, volume: 0.055 * intensity, delay: 0.08, filter: 900 });
+      return;
+    }
+
+    if (type === 'big-bang') {
+      tone({ frequency: 44 * pitch, slideTo: 28 * pitch, duration: 0.56, type: 'sine', volume: 0.3 * intensity });
+      tone({ frequency: 330 * pitch, slideTo: 1320 * pitch, duration: 0.48, type: 'sawtooth', volume: 0.16 * intensity, delay: 0.03 });
+      tone({ frequency: 990 * pitch, slideTo: 1980 * pitch, duration: 0.36, type: 'triangle', volume: 0.12 * intensity, delay: 0.14 });
+      tone({ frequency: 1480 * pitch, slideTo: 2220 * pitch, duration: 0.28, type: 'sine', volume: 0.08 * intensity, delay: 0.24 });
+      noise({ duration: 0.5, volume: 0.13 * intensity, delay: 0.01, filter: 1600 });
+      noise({ duration: 0.24, volume: 0.07 * intensity, delay: 0.24, filter: 7200 });
+      return;
+    }
+
+    if (type === 'black-hole') {
+      tone({ frequency: 260 * pitch, slideTo: 31 * pitch, duration: 0.62, type: 'sine', volume: 0.24 * intensity });
+      tone({ frequency: 1180 * pitch, slideTo: 110 * pitch, duration: 0.5, type: 'sawtooth', volume: 0.09 * intensity, delay: 0.04 });
+      tone({ frequency: 72 * pitch, slideTo: 38 * pitch, duration: 0.48, type: 'triangle', volume: 0.18 * intensity, delay: 0.14 });
+      noise({ duration: 0.46, volume: 0.075 * intensity, delay: 0.04, filter: 420 });
+      return;
+    }
+
+    if (type === 'gate') {
+      tone({ frequency: 220 * pitch, slideTo: 880 * pitch, duration: 0.42, type: 'triangle', volume: 0.12 * intensity });
+      tone({ frequency: 330 * pitch, slideTo: 990 * pitch, duration: 0.42, type: 'sine', volume: 0.1 * intensity, delay: 0.05 });
+      tone({ frequency: 660 * pitch, slideTo: 330 * pitch, duration: 0.28, type: 'square', volume: 0.055 * intensity, delay: 0.18 });
+      noise({ duration: 0.22, volume: 0.05 * intensity, delay: 0.1, filter: 5200 });
+      return;
+    }
+
+    if (type === 'divine') {
+      [0, 0.045, 0.09, 0.135].forEach((delay, index) => {
+        tone({ frequency: [392, 523.25, 659.25, 1046.5][index] * pitch, slideTo: [523.25, 659.25, 783.99, 1567.98][index] * pitch, duration: 0.36, type: 'sine', volume: 0.075 * intensity, delay });
+      });
+      tone({ frequency: 98 * pitch, slideTo: 196 * pitch, duration: 0.46, type: 'triangle', volume: 0.16 * intensity });
+      noise({ duration: 0.2, volume: 0.035 * intensity, delay: 0.08, filter: 8400 });
+      return;
+    }
+
+    if (type === 'reality-delete') {
+      tone({ frequency: 720 * pitch, slideTo: 36 * pitch, duration: 0.18, type: 'square', volume: 0.1 * intensity });
+      noise({ duration: 0.08, volume: 0.12 * intensity, delay: 0.04, filter: 2400 });
+      tone({ frequency: 42 * pitch, slideTo: 24 * pitch, duration: 0.58, type: 'sine', volume: 0.32 * intensity, delay: 0.18 });
+      tone({ frequency: 1440 * pitch, slideTo: 180 * pitch, duration: 0.32, type: 'sawtooth', volume: 0.08 * intensity, delay: 0.22 });
+      noise({ duration: 0.36, volume: 0.11 * intensity, delay: 0.2, filter: 120 });
+      return;
+    }
+
+    tone({ frequency: 88 * pitch, slideTo: 52 * pitch, duration: 0.28, type: 'sine', volume: 0.22 * intensity });
+    tone({ frequency: (520 + comboLift) * pitch, slideTo: 980 * pitch, duration: 0.24, type: 'square', volume: 0.1 * intensity, delay: 0.04 });
+    tone({ frequency: (1040 + comboLift) * pitch, slideTo: 1560 * pitch, duration: 0.18, type: 'triangle', volume: 0.08 * intensity, delay: 0.11 });
+    noise({ duration: 0.3, volume: 0.085 * intensity, delay: 0.03, filter: 1800 });
+  }
+
   function milestone() {
     tone({ frequency: 72, slideTo: 48, duration: 0.22, type: 'sine', volume: 0.22 });
     tone({ frequency: 440, slideTo: 880, duration: 0.24, type: 'triangle', volume: 0.16, delay: 0.02 });
@@ -167,6 +248,7 @@ window.PulseAudio = (() => {
   return {
     tap,
     boost,
+    comboEffect,
     milestone,
     max,
     reset,

@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">Pulse overdrive maskable icon</title>
+  <desc id="desc">A mask-safe neon pulse icon with a centered electric core.</desc>
+  <defs>
+    <radialGradient id="void" cx="50%" cy="40%" r="76%">
+      <stop offset="0" stop-color="#260844"/>
+      <stop offset="0.48" stop-color="#08090b"/>
+      <stop offset="1" stop-color="#020006"/>
+    </radialGradient>
+    <linearGradient id="beam" x1="80" y1="112" x2="430" y2="404" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fff36a"/>
+      <stop offset="0.34" stop-color="#46ffee"/>
+      <stop offset="0.68" stop-color="#ff2bdd"/>
+      <stop offset="1" stop-color="#8e42ff"/>
+    </linearGradient>
+    <filter id="glow" x="-35%" y="-35%" width="170%" height="170%">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <rect width="512" height="512" fill="url(#void)"/>
+  <circle cx="256" cy="256" r="190" fill="none" stroke="#fff36a" stroke-opacity="0.16" stroke-width="16"/>
+  <circle cx="256" cy="256" r="145" fill="none" stroke="#46ffee" stroke-opacity="0.28" stroke-width="12" stroke-dasharray="38 18"/>
+  <circle cx="256" cy="256" r="94" fill="none" stroke="#ff2bdd" stroke-opacity="0.46" stroke-width="14"/>
+  <path d="M112 270h70l26-62 43 124 39-154 32 92h78" fill="none" stroke="url(#beam)" stroke-width="22" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)"/>
+  <circle cx="256" cy="256" r="44" fill="#05000f" stroke="#fff36a" stroke-width="14" filter="url(#glow)"/>
+  <circle cx="256" cy="256" r="13" fill="#46ffee"/>
+  <path d="M156 146 356 366M356 146 156 366" stroke="#ff2bdd" stroke-opacity="0.16" stroke-width="10" stroke-linecap="round"/>
+</svg>

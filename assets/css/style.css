@@ -154,6 +154,7 @@
 
 html {
   height: 100%;
+  background: var(--bg, #08090b);
 }
 
 body {
@@ -163,14 +164,15 @@ body {
   font-family: var(--display-font, Inter, -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif);
   font-size: 16px;
   background:
-    radial-gradient(circle at 50% 10%, rgba(255, 255, 255, 0.16), transparent 31rem),
-    radial-gradient(circle at 50% 90%, rgba(255, 255, 255, 0.08), transparent 26rem),
-    #050506;
+    radial-gradient(circle at 50% 10%, rgba(var(--accent-rgb, 244, 239, 227), 0.13), transparent 31rem),
+    radial-gradient(circle at 50% 90%, rgba(var(--accent-rgb, 244, 239, 227), 0.07), transparent 26rem),
+    var(--bg, #050506);
   -webkit-tap-highlight-color: transparent;
   user-select: none;
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: background 0.28s ease;
 }
 
 /* ===== iPHONE FRAME ===== */
@@ -188,12 +190,19 @@ body {
   color: var(--text, #e5e5e7);
   border-radius: 47px;
   overflow: hidden;
+  isolation: isolate;
   box-shadow:
     0 0 0 1px rgba(255, 255, 255, 0.08),
     0 0 0 7px #080808,
     0 30px 90px rgba(0, 0, 0, 0.7),
     0 0 90px var(--frame-glow);
   transition: background 0.3s, color 0.3s;
+}
+
+.iphone-frame.skin-changing *,
+.iphone-frame.skin-changing *::before,
+.iphone-frame.skin-changing *::after {
+  transition: none !important;
 }
 
 .skin-transition {
@@ -1128,6 +1137,501 @@ body {
   0% { opacity: 0.9; transform: translate(-50%, -50%) scale(0.25); filter: blur(0); }
   72% { opacity: 0.42; }
   100% { opacity: 0; transform: translate(-50%, -50%) scale(var(--burst-scale, 4.2)); filter: blur(1px); }
+}
+
+/* ===== PARAMETRIC COMBO EFFECTS ===== */
+
+.combo-effect {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  overflow: hidden;
+  mix-blend-mode: screen;
+  filter: hue-rotate(var(--combo-effect-hue, 0deg));
+  animation: combo-effect-shell var(--combo-effect-duration, 1600ms) cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.combo-effect::before,
+.combo-effect::after {
+  content: "";
+  position: absolute;
+  inset: -20%;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.combo-effect::before {
+  background:
+    radial-gradient(circle at 50% 50%, rgba(var(--accent-rgb), 0.58), transparent 0 10%, rgba(var(--accent-rgb), 0.22) 11% 15%, transparent 16% 100%),
+    conic-gradient(from 0deg, transparent, rgba(var(--accent-rgb), 0.34), transparent, rgba(var(--accent-rgb), 0.2), transparent);
+  animation: combo-space-warp var(--combo-effect-duration, 1600ms) cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.combo-effect::after {
+  background:
+    repeating-radial-gradient(circle at 50% 50%, rgba(var(--accent-rgb), 0.18) 0 1px, transparent 1px 18px),
+    radial-gradient(circle at 50% 50%, transparent 0 34%, rgba(0, 0, 0, 0.32) 78%);
+  animation: combo-starfield var(--combo-effect-duration, 1600ms) ease-out both;
+}
+
+.combo-effect-core {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 138px;
+  height: 138px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, var(--accent) 0 8%, rgba(var(--accent-rgb), 0.64) 9% 19%, rgba(var(--accent-rgb), 0.12) 20% 48%, transparent 49% 100%);
+  box-shadow:
+    0 0 calc(48px * var(--combo-effect-intensity, 1)) rgba(var(--accent-rgb), 0.58),
+    0 0 calc(120px * var(--combo-effect-intensity, 1)) rgba(var(--accent-rgb), 0.26);
+  transform: translate(-50%, -50%);
+  animation: combo-core var(--combo-effect-duration, 1600ms) cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.combo-effect-ring {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 104px;
+  height: 104px;
+  border: 2px solid rgba(var(--accent-rgb), 0.52);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 24px rgba(var(--accent-rgb), 0.24);
+  animation: combo-ring-blast var(--combo-effect-duration, 1600ms) var(--ring-delay, 0ms) cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.combo-effect-shard {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: var(--shard-size, 8px);
+  height: calc(var(--shard-size, 8px) * 2.7);
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(var(--accent-rgb), 0), rgba(var(--accent-rgb), 1), rgba(var(--accent-rgb), 0));
+  box-shadow: 0 0 18px rgba(var(--accent-rgb), 0.44);
+  transform: translate(-50%, -50%) rotate(var(--angle));
+  animation: combo-shard var(--combo-effect-duration, 1600ms) var(--shard-delay, 0ms) cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.combo-effect-label {
+  position: absolute;
+  left: 50%;
+  bottom: 24%;
+  color: var(--accent);
+  font-family: var(--mono-font);
+  font-size: clamp(15px, 4.7vw, 20px);
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  text-shadow:
+    0 0 18px rgba(var(--accent-rgb), 0.72),
+    0 0 56px rgba(var(--accent-rgb), 0.36);
+  transform: translateX(-50%);
+  animation: combo-effect-label var(--combo-effect-duration, 1600ms) cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.combo-effect[data-effect="collapse"] .combo-effect-core {
+  animation-name: combo-core-collapse;
+}
+
+.combo-effect[data-effect="collapse"] .combo-effect-ring {
+  animation-name: combo-ring-collapse;
+}
+
+.combo-effect[data-effect="planet-explode"] .combo-effect-core {
+  background:
+    radial-gradient(circle, var(--accent) 0 8%, rgba(var(--accent-rgb), 0.76) 9% 24%, rgba(255, 255, 255, 0.12) 25% 31%, transparent 32% 100%);
+}
+
+.combo-effect[data-effect="supernova"] {
+  mix-blend-mode: plus-lighter;
+}
+
+.combo-effect[data-effect="supernova"] .combo-effect-core {
+  width: 184px;
+  height: 184px;
+  background:
+    radial-gradient(circle, #fff 0 5%, var(--accent) 6% 17%, rgba(var(--accent-rgb), 0.5) 18% 42%, transparent 43% 100%);
+}
+
+.combo-effect[data-effect="thunder-break"] {
+  mix-blend-mode: plus-lighter;
+}
+
+.combo-effect[data-effect="thunder-break"]::before {
+  background:
+    linear-gradient(118deg, transparent 0 21%, rgba(255, 255, 255, 0.9) 22% 23%, var(--accent) 24% 27%, transparent 28% 100%),
+    linear-gradient(72deg, transparent 0 48%, rgba(255, 255, 255, 0.72) 49% 50%, rgba(var(--accent-rgb), 0.46) 51% 54%, transparent 55% 100%),
+    radial-gradient(circle at 50% 48%, rgba(var(--accent-rgb), 0.46), transparent 0 18%, transparent 19% 100%);
+  animation-name: combo-thunder-field;
+}
+
+.combo-effect[data-effect="thunder-break"]::after {
+  background:
+    repeating-linear-gradient(180deg, rgba(255, 255, 255, 0.28) 0 2px, transparent 2px 12px),
+    radial-gradient(circle at 50% 50%, transparent 0 22%, rgba(var(--accent-rgb), 0.34) 23% 25%, transparent 26% 100%);
+  animation-name: combo-thunder-flash;
+}
+
+.combo-effect[data-effect="thunder-break"] .combo-effect-core {
+  width: 220px;
+  height: 220px;
+  clip-path: polygon(50% 0, 61% 35%, 90% 23%, 68% 52%, 100% 62%, 64% 68%, 72% 100%, 50% 74%, 28% 100%, 36% 68%, 0 62%, 32% 52%, 10% 23%, 39% 35%);
+  background:
+    radial-gradient(circle, #fff 0 8%, var(--accent) 9% 26%, rgba(var(--accent-rgb), 0.38) 27% 58%, transparent 59% 100%);
+  box-shadow:
+    0 0 calc(84px * var(--combo-effect-intensity, 1)) rgba(var(--accent-rgb), 0.68),
+    0 0 calc(150px * var(--combo-effect-intensity, 1)) rgba(var(--accent-rgb), 0.3);
+  animation-name: combo-thunder-core;
+}
+
+.combo-effect[data-effect="thunder-break"] .combo-effect-ring {
+  border-width: 3px;
+  border-radius: 22% 78% 31% 69%;
+  animation-name: combo-thunder-ring;
+}
+
+.combo-effect[data-effect="thunder-break"] .combo-effect-shard {
+  height: calc(var(--shard-size, 8px) * 4);
+  animation-name: combo-thunder-spark;
+}
+
+.combo-effect[data-effect="big-bang"] {
+  mix-blend-mode: plus-lighter;
+}
+
+.combo-effect[data-effect="big-bang"]::before {
+  background:
+    radial-gradient(circle at 50% 50%, #fff 0 3%, var(--accent) 4% 10%, rgba(var(--accent-rgb), 0.52) 11% 24%, transparent 25% 100%),
+    conic-gradient(from 45deg, #fff, rgba(var(--accent-rgb), 0.38), transparent, rgba(255, 255, 255, 0.42), var(--accent), transparent, #fff);
+  animation-name: combo-big-bang-space;
+}
+
+.combo-effect[data-effect="big-bang"]::after {
+  background:
+    repeating-conic-gradient(from 0deg, rgba(255, 255, 255, 0.24) 0 3deg, transparent 3deg 9deg),
+    radial-gradient(circle at 50% 50%, transparent 0 18%, rgba(var(--accent-rgb), 0.2) 19% 21%, transparent 22% 100%);
+  animation-name: combo-big-bang-rays;
+}
+
+.combo-effect[data-effect="big-bang"] .combo-effect-core {
+  width: 230px;
+  height: 230px;
+  background:
+    radial-gradient(circle, #fff 0 7%, var(--accent) 8% 24%, rgba(var(--accent-rgb), 0.46) 25% 46%, transparent 47% 100%);
+  animation-name: combo-big-bang-core;
+}
+
+.combo-effect[data-effect="big-bang"] .combo-effect-ring {
+  border-width: 3px;
+  animation-name: combo-big-bang-ring;
+}
+
+.combo-effect[data-effect="big-bang"] .combo-effect-label {
+  bottom: 18%;
+  font-size: clamp(18px, 5.4vw, 24px);
+}
+
+.combo-effect[data-effect="black-hole"]::before {
+  background:
+    radial-gradient(circle at 50% 50%, #000 0 13%, rgba(var(--accent-rgb), 0.46) 14% 18%, transparent 19% 100%),
+    conic-gradient(from 0deg, transparent, rgba(var(--accent-rgb), 0.42), #000, rgba(var(--accent-rgb), 0.28), transparent);
+  animation-name: combo-black-hole-warp;
+}
+
+.combo-effect[data-effect="black-hole"]::after {
+  background: repeating-conic-gradient(from 0deg, rgba(var(--accent-rgb), 0.32) 0 2deg, transparent 2deg 8deg);
+  animation-name: combo-black-hole-stars;
+}
+
+.combo-effect[data-effect="black-hole"] .combo-effect-core {
+  background: radial-gradient(circle, #000 0 28%, var(--accent) 29% 33%, rgba(var(--accent-rgb), 0.28) 34% 52%, transparent 53% 100%);
+  box-shadow: 0 0 90px rgba(var(--accent-rgb), 0.44), inset 0 0 42px #000;
+  animation-name: combo-black-hole-core;
+}
+
+.combo-effect[data-effect="black-hole"] .combo-effect-ring,
+.combo-effect[data-effect="black-hole"] .combo-effect-shard {
+  animation-name: combo-black-hole-devour;
+}
+
+.combo-effect[data-effect="dimension-gate"]::before {
+  background:
+    repeating-conic-gradient(from 0deg, rgba(var(--accent-rgb), 0.34) 0 7deg, transparent 7deg 15deg),
+    radial-gradient(circle, transparent 0 22%, rgba(var(--accent-rgb), 0.38) 23% 27%, transparent 28% 100%);
+  animation-name: combo-gate-spin;
+}
+
+.combo-effect[data-effect="dimension-gate"] .combo-effect-core {
+  width: 210px;
+  height: 210px;
+  border-radius: 28% 72% 32% 68%;
+  background: radial-gradient(circle, transparent 0 22%, rgba(var(--accent-rgb), 0.62) 23% 31%, rgba(var(--accent-rgb), 0.12) 32% 54%, transparent 55% 100%);
+  animation-name: combo-gate-core;
+}
+
+.combo-effect[data-effect="dimension-gate"] .combo-effect-ring:nth-of-type(odd) {
+  border-radius: 28% 72% 32% 68%;
+}
+
+.combo-effect[data-effect="dimension-gate"] .combo-effect-ring {
+  animation-name: combo-gate-ring;
+}
+
+.combo-effect[data-effect="divine-pulse"] {
+  mix-blend-mode: plus-lighter;
+}
+
+.combo-effect[data-effect="divine-pulse"]::before {
+  background:
+    linear-gradient(90deg, transparent 0 28%, rgba(255, 255, 255, 0.34) 29% 31%, transparent 32% 68%, rgba(255, 255, 255, 0.34) 69% 71%, transparent 72% 100%),
+    radial-gradient(ellipse at 50% 50%, rgba(255, 255, 255, 0.76) 0 8%, rgba(var(--accent-rgb), 0.42) 9% 28%, transparent 29% 100%);
+  animation-name: combo-divine-wings;
+}
+
+.combo-effect[data-effect="divine-pulse"] .combo-effect-core {
+  background: radial-gradient(circle, #fff 0 11%, var(--accent) 12% 26%, rgba(var(--accent-rgb), 0.28) 27% 54%, transparent 55% 100%);
+  animation-name: combo-divine-core;
+}
+
+.combo-effect[data-effect="divine-pulse"] .combo-effect-ring {
+  border-color: rgba(255, 255, 255, 0.72);
+  animation-name: combo-divine-halo;
+}
+
+.combo-effect[data-effect="reality-delete"] {
+  mix-blend-mode: difference;
+}
+
+.combo-effect[data-effect="reality-delete"]::before {
+  background:
+    repeating-linear-gradient(180deg, #fff 0 3px, transparent 3px 8px),
+    repeating-linear-gradient(90deg, rgba(var(--accent-rgb), 0.44) 0 2px, transparent 2px 18px);
+  animation-name: combo-reality-scan;
+}
+
+.combo-effect[data-effect="reality-delete"]::after {
+  background: radial-gradient(circle, #fff 0 8%, #000 9% 18%, rgba(var(--accent-rgb), 0.42) 19% 34%, transparent 35% 100%);
+  animation-name: combo-reality-flash;
+}
+
+.combo-effect[data-effect="reality-delete"] .combo-effect-core {
+  width: 250px;
+  height: 250px;
+  border-radius: 8px;
+  background: repeating-linear-gradient(180deg, #fff 0 5px, #000 5px 10px);
+  animation-name: combo-reality-core;
+}
+
+.combo-effect[data-effect="reality-delete"] .combo-effect-ring {
+  border-radius: 6px;
+  animation-name: combo-reality-ring;
+}
+
+@keyframes combo-effect-shell {
+  0% { opacity: 0; filter: hue-rotate(var(--combo-effect-hue, 0deg)) blur(7px) brightness(1); }
+  12% { opacity: 1; filter: hue-rotate(var(--combo-effect-hue, 0deg)) blur(0) brightness(calc(1.2 * var(--combo-effect-intensity, 1))); }
+  70% { opacity: 0.92; }
+  100% { opacity: 0; filter: hue-rotate(var(--combo-effect-hue, 0deg)) blur(9px) brightness(0.82); }
+}
+
+@keyframes combo-space-warp {
+  0% { opacity: 0; transform: scale(0.32) rotate(0deg); }
+  22% { opacity: 0.85; }
+  100% { opacity: 0; transform: scale(calc(1.5 * var(--combo-effect-intensity, 1))) rotate(190deg); }
+}
+
+@keyframes combo-starfield {
+  0% { opacity: 0; transform: scale(1.18) rotate(0deg); }
+  24% { opacity: 0.7; }
+  100% { opacity: 0; transform: scale(0.68) rotate(-32deg); }
+}
+
+@keyframes combo-core {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(0.18); }
+  22% { opacity: 1; transform: translate(-50%, -50%) scale(calc(1.05 * var(--combo-effect-intensity, 1))); }
+  45% { opacity: 0.86; transform: translate(-50%, -50%) scale(0.74); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(calc(3.15 * var(--combo-effect-intensity, 1))); }
+}
+
+@keyframes combo-core-collapse {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(2.5); filter: brightness(0.7); }
+  24% { opacity: 0.95; transform: translate(-50%, -50%) scale(1); filter: brightness(1.4); }
+  62% { opacity: 1; transform: translate(-50%, -50%) scale(0.18); filter: brightness(2.2); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(0.02); filter: brightness(0); }
+}
+
+@keyframes combo-ring-blast {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(0.12); }
+  16% { opacity: 0.86; }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(calc((4.3 + var(--ring-index, 0)) * var(--combo-effect-intensity, 1))); }
+}
+
+@keyframes combo-ring-collapse {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(calc((4.8 + var(--ring-index, 0)) * var(--combo-effect-intensity, 1))); }
+  20% { opacity: 0.78; }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(0.08); }
+}
+
+@keyframes combo-shard {
+  0% { opacity: 0; transform: translate(-50%, -50%) rotate(var(--angle)) translateY(0) scaleY(0.1); }
+  16% { opacity: 1; }
+  100% { opacity: 0; transform: translate(-50%, -50%) rotate(var(--angle)) translateY(calc(var(--distance) * -1 * var(--combo-effect-intensity, 1))) scaleY(1.35); }
+}
+
+@keyframes combo-effect-label {
+  0% { opacity: 0; transform: translate(-50%, 18px) scale(0.82); filter: blur(4px); }
+  20%, 58% { opacity: 1; transform: translate(-50%, 0) scale(1); filter: blur(0); }
+  100% { opacity: 0; transform: translate(-50%, -22px) scale(1.08); filter: blur(5px); }
+}
+
+@keyframes combo-thunder-field {
+  0% { opacity: 0; transform: scale(1.1) translateY(-12%); filter: blur(8px) brightness(2.5); }
+  12% { opacity: 1; transform: scale(1) translateY(0); filter: blur(0) brightness(2.2); }
+  34% { opacity: 0.74; transform: scale(1.04) translateY(2%); }
+  100% { opacity: 0; transform: scale(1.24) translateY(8%); filter: blur(10px) brightness(0.8); }
+}
+
+@keyframes combo-thunder-flash {
+  0%, 8% { opacity: 0; transform: scale(0.8); }
+  13% { opacity: 1; transform: scale(1); }
+  22% { opacity: 0.18; }
+  34% { opacity: 0.7; }
+  100% { opacity: 0; transform: scale(1.6); }
+}
+
+@keyframes combo-thunder-core {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(0.42) rotate(-10deg); filter: brightness(4) blur(4px); }
+  14% { opacity: 1; transform: translate(-50%, -50%) scale(1.12) rotate(6deg); filter: brightness(2.6) blur(0); }
+  28% { transform: translate(-50%, -50%) scale(0.92) rotate(-3deg); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(calc(2.8 * var(--combo-effect-intensity, 1))) rotate(22deg); filter: brightness(0.9) blur(9px); }
+}
+
+@keyframes combo-thunder-ring {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(0.18) rotate(0deg); }
+  12% { opacity: 0.96; }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(calc((4.4 + var(--ring-index, 0)) * var(--combo-effect-intensity, 1))) rotate(150deg); }
+}
+
+@keyframes combo-thunder-spark {
+  0% { opacity: 0; transform: translate(-50%, -50%) rotate(var(--angle)) translateY(0) scaleY(0.1); }
+  14% { opacity: 1; }
+  100% { opacity: 0; transform: translate(-50%, -50%) rotate(var(--angle)) translateY(calc(var(--distance) * -1 * var(--combo-effect-intensity, 1))) scaleY(1.8); }
+}
+
+@keyframes combo-big-bang-space {
+  0% { opacity: 0; transform: scale(0.04) rotate(0deg); filter: brightness(4) blur(0); }
+  14% { opacity: 1; transform: scale(0.42) rotate(40deg); }
+  100% { opacity: 0; transform: scale(calc(1.85 * var(--combo-effect-intensity, 1))) rotate(340deg); filter: brightness(0.7) blur(10px); }
+}
+
+@keyframes combo-big-bang-rays {
+  0% { opacity: 0; transform: scale(0.18) rotate(0deg); }
+  18% { opacity: 0.9; }
+  100% { opacity: 0; transform: scale(2.5) rotate(-180deg); }
+}
+
+@keyframes combo-big-bang-core {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(0.02); filter: brightness(7); }
+  16% { opacity: 1; transform: translate(-50%, -50%) scale(0.82); filter: brightness(2.8); }
+  42% { opacity: 0.92; transform: translate(-50%, -50%) scale(1.28); filter: brightness(1.6); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(calc(4.2 * var(--combo-effect-intensity, 1))); filter: brightness(0.8) blur(12px); }
+}
+
+@keyframes combo-big-bang-ring {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(0.04) rotate(0deg); }
+  12% { opacity: 1; }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(calc((5.8 + var(--ring-index, 0)) * var(--combo-effect-intensity, 1))) rotate(90deg); }
+}
+
+@keyframes combo-black-hole-warp {
+  0% { opacity: 0; transform: scale(1.8) rotate(0deg); filter: blur(5px); }
+  25% { opacity: 0.95; }
+  100% { opacity: 0; transform: scale(0.08) rotate(420deg); filter: blur(12px); }
+}
+
+@keyframes combo-black-hole-stars {
+  0% { opacity: 0; transform: scale(1.7) rotate(0deg); }
+  30% { opacity: 0.78; }
+  100% { opacity: 0; transform: scale(0.2) rotate(-520deg); }
+}
+
+@keyframes combo-black-hole-core {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(0.4); }
+  26% { opacity: 1; transform: translate(-50%, -50%) scale(1.35); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(0.05); }
+}
+
+@keyframes combo-black-hole-devour {
+  0% { opacity: 0; transform: translate(-50%, -50%) rotate(var(--angle, 0deg)) translateY(calc(var(--distance, 120px) * -1)) scale(1); }
+  25% { opacity: 0.9; }
+  100% { opacity: 0; transform: translate(-50%, -50%) rotate(calc(var(--angle, 0deg) + 260deg)) translateY(0) scale(0.05); }
+}
+
+@keyframes combo-gate-spin {
+  0% { opacity: 0; transform: scale(0.3) rotate(0deg); }
+  22% { opacity: 0.92; }
+  100% { opacity: 0; transform: scale(1.65) rotate(540deg); }
+}
+
+@keyframes combo-gate-core {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(0.2) rotate(0deg); }
+  24%, 68% { opacity: 1; transform: translate(-50%, -50%) scale(1.05) rotate(180deg); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(1.8) rotate(360deg); }
+}
+
+@keyframes combo-gate-ring {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(0.2) rotate(0deg); }
+  18% { opacity: 0.82; }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(calc((4.4 + var(--ring-index, 0)) * var(--combo-effect-intensity, 1))) rotate(calc(180deg + var(--ring-index, 0) * 70deg)); }
+}
+
+@keyframes combo-divine-wings {
+  0% { opacity: 0; transform: scale(0.5); filter: blur(8px); }
+  22%, 60% { opacity: 0.92; transform: scale(1.08); filter: blur(0); }
+  100% { opacity: 0; transform: scale(1.8); filter: blur(10px); }
+}
+
+@keyframes combo-divine-core {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(0.18); filter: brightness(4); }
+  24% { opacity: 1; transform: translate(-50%, -50%) scale(1.15); filter: brightness(2); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(3.4); filter: brightness(0.9) blur(9px); }
+}
+
+@keyframes combo-divine-halo {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(0.16); }
+  18% { opacity: 1; }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(calc((5 + var(--ring-index, 0)) * var(--combo-effect-intensity, 1))); }
+}
+
+@keyframes combo-reality-scan {
+  0% { opacity: 0; transform: translateY(-18%) scale(1.2); filter: contrast(3); }
+  12%, 38% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(18%) scale(0.9); filter: contrast(0.5) blur(8px); }
+}
+
+@keyframes combo-reality-flash {
+  0%, 18% { opacity: 0; transform: scale(0.2); }
+  24% { opacity: 1; transform: scale(1.2); }
+  100% { opacity: 0; transform: scale(3.2); }
+}
+
+@keyframes combo-reality-core {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(1.6) skewX(18deg); filter: grayscale(1); }
+  18% { opacity: 1; transform: translate(-50%, -50%) scale(0.86) skewX(-12deg); }
+  40% { transform: translate(-50%, -50%) scale(1.2) skewX(8deg); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(0.08) skewX(0); filter: grayscale(1) blur(10px); }
+}
+
+@keyframes combo-reality-ring {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(0.2) rotate(0deg); }
+  12% { opacity: 1; }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(calc((5.2 + var(--ring-index, 0)) * var(--combo-effect-intensity, 1))) rotate(180deg); }
 }
 
 .milestone-effect {

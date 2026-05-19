@@ -1,28 +1,13 @@
 // ===== STATE =====
 
-const SKINS = [
-  { id: 'pulse', label: 'pulse', bg: '#08090b', accent: '#f4efe3' },
-  { id: 'mist', label: 'mist', bg: '#ece8df', accent: '#171615' },
-  { id: 'graphite', label: 'graphite', bg: '#111113', accent: '#ddd8cd' },
-  { id: 'retro', label: 'retro', bg: '#170f14', accent: '#ffbd73' },
-  { id: 'crt', label: 'crt', bg: '#03110f', accent: '#73ffd2' },
-  { id: 'skyline83', label: 'skyline 83', bg: '#100818', accent: '#85e7ff' },
-  { id: 'jynthark', label: 'jynthark overdrive', bg: '#05000f', accent: '#fff36a', hidden: true },
-];
-
-const STORAGE_KEY = 'pulse-state';
-const MAX_COUNTER_VALUE = 9999;
-const BOOST_HOLD_DURATION = 3600;
-const BOOST_WORDS = [
-  'sharp',
-  'clean',
-  'locked',
-  'wild',
-  'electric',
-  'limitless',
-  'flawless',
-  'unstoppable',
-];
+const {
+  SKINS,
+  STORAGE_KEY,
+  MAX_COUNTER_VALUE,
+  BOOST_HOLD_DURATION,
+  BOOST_WORDS,
+  COMBO_EFFECTS,
+} = window.PulseConfig;
 
 let state = loadState();
 let activeCounterId = null;
@@ -59,6 +44,26 @@ function saveState() {
 
 // ===== SKIN =====
 
+function setSkinAttributes(skinId) {
+  const frame = document.querySelector('.iphone-frame');
+  document.documentElement.setAttribute('data-skin', skinId);
+  document.body.setAttribute('data-skin', skinId);
+  frame?.setAttribute('data-skin', skinId);
+}
+
+function syncThemeColor(skin) {
+  document.getElementById('theme-color')?.setAttribute('content', skin.bg);
+}
+
+function repaintSkin() {
+  const frame = document.querySelector('.iphone-frame');
+  if (!frame) return;
+
+  frame.classList.add('skin-changing');
+  void frame.offsetWidth;
+  requestAnimationFrame(() => frame.classList.remove('skin-changing'));
+}
+
 function applySkin(skinId, options = {}) {
   const skin = SKINS.find(s => s.id === skinId);
   if (!skin || (skin.hidden && !state.secretSkinUnlocked)) return;
@@ -71,7 +76,9 @@ function applySkin(skinId, options = {}) {
     overlay.style.background = skin.bg;
     overlay.classList.add('active');
     setTimeout(() => {
-      document.querySelector('.iphone-frame').setAttribute('data-skin', skinId);
+      setSkinAttributes(skinId);
+      syncThemeColor(skin);
+      repaintSkin();
       if (skinId === 'jynthark' && options.startMusic) {
         window.PulseAudio?.startOverdriveMusic();
       } else {
@@ -92,7 +99,9 @@ function applySkin(skinId, options = {}) {
     return;
   }
 
-  document.querySelector('.iphone-frame').setAttribute('data-skin', skinId);
+  setSkinAttributes(skinId);
+  syncThemeColor(skin);
+  repaintSkin();
   if (skinId === 'jynthark' && options.startMusic) {
     window.PulseAudio?.startOverdriveMusic();
   } else {
@@ -293,7 +302,7 @@ function clearVisualEffects() {
   document.getElementById('combo-badge')?.classList.remove('show', 'boost-word');
   document.getElementById('milestone-effect')?.classList.remove('show');
   document.getElementById('max-effect')?.classList.remove('show', 'limit-tap');
-  document.querySelectorAll('.tap-burst, .milestone-particle').forEach(el => el.remove());
+  document.querySelectorAll('.tap-burst, .milestone-particle, .combo-effect').forEach(el => el.remove());
   clearTimeout(boostHoldTimer);
   boostHoldUntil = 0;
 }
@@ -343,6 +352,7 @@ function showCombo(count) {
 
   if (shouldBoost) {
     window.PulseAudio?.boost();
+    triggerComboEffect(count);
     clearTimeout(boostHoldTimer);
     boostHoldUntil = performance.now() + BOOST_HOLD_DURATION;
     boostHoldTimer = setTimeout(() => {
@@ -350,6 +360,57 @@ function showCombo(count) {
       boostHoldUntil = 0;
     }, BOOST_HOLD_DURATION);
   }
+}
+
+function getComboEffect(count) {
+  return COMBO_EFFECTS
+    .filter(effect => count >= effect.minCombo && count % effect.every === 0)
+    .filter(effect => effect.skins === 'all' || effect.skins.includes(state.skin))
+    .sort((a, b) => (b.priority || 0) - (a.priority || 0))[0];
+}
+
+function triggerComboEffect(count) {
+  const preset = getComboEffect(count);
+  if (!preset) return;
+  const zone = document.getElementById('counter-zone');
+  if (!zone) return;
+
+  const visual = preset.visual || {};
+  const duration = visual.duration || 1600;
+  const intensity = visual.intensity || 1;
+  const rings = visual.rings || 3;
+  const shards = visual.shards || 20;
+  const effect = document.createElement('div');
+  effect.className = 'combo-effect';
+  effect.dataset.effect = visual.type || 'planet-explode';
+  effect.style.setProperty('--combo-effect-duration', `${duration}ms`);
+  effect.style.setProperty('--combo-effect-intensity', intensity.toFixed(2));
+  effect.style.setProperty('--combo-effect-hue', `${visual.hue || 0}deg`);
+  effect.innerHTML = `<span class="combo-effect-core"></span><span class="combo-effect-label">${escapeHtml(preset.label || `combo ×${count}`)}</span>`;
+
+  for (let i = 0; i < rings; i += 1) {
+    const ring = document.createElement('span');
+    ring.className = 'combo-effect-ring';
+    ring.style.setProperty('--ring-index', i);
+    ring.style.setProperty('--ring-delay', `${i * 90}ms`);
+    effect.appendChild(ring);
+  }
+
+  for (let i = 0; i < shards; i += 1) {
+    const shard = document.createElement('span');
+    shard.className = 'combo-effect-shard';
+    shard.style.setProperty('--angle', `${(360 / shards) * i}deg`);
+    shard.style.setProperty('--distance', `${90 + Math.random() * 170}px`);
+    shard.style.setProperty('--shard-delay', `${Math.random() * 160}ms`);
+    shard.style.setProperty('--shard-size', `${4 + Math.random() * 11}px`);
+    effect.appendChild(shard);
+  }
+
+  zone.querySelectorAll('.combo-effect').forEach(el => el.remove());
+  zone.appendChild(effect);
+  window.PulseAudio?.comboEffect?.(preset.sound || {}, count);
+  if (preset.vibrate && 'vibrate' in navigator) navigator.vibrate(preset.vibrate);
+  setTimeout(() => effect.remove(), duration + 240);
 }
 
 function showTapBurst(clientX, clientY, combo = 1) {
@@ -600,6 +661,19 @@ function init() {
   // Skin overlay
   document.getElementById('skin-btn').addEventListener('click', () => {
     document.getElementById('skin-overlay').classList.add('active');
+  });
+
+  registerServiceWorker();
+}
+
+function registerServiceWorker() {
+  if (!('serviceWorker' in navigator)) return;
+  if (!window.isSecureContext && location.hostname !== 'localhost') return;
+
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(() => {
+      // PWA caching is an enhancement; keep the app usable if registration fails.
+    });
   });
 }
 

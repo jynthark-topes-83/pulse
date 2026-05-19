@@ -7,10 +7,12 @@ Pulse is a minimal ritual counter built with plain HTML, CSS, and JavaScript.
 ## Features
 
 - Create and manage named counters
-- Tap, double-tap, swipe, and hold gestures
+- Tap, swipe, hold, and combo feedback gestures
 - Multiple visual atmospheres
+- Configurable combo effects
 - Milestone and max-limit feedback
 - Web Audio API sound effects
+- Progressive Web App support for home-screen installation
 - Hidden `jynthark overdrive` easter egg
 
 ## Run locally
@@ -22,6 +24,10 @@ No build step and no dependencies are required.
 ## Notes
 
 Counter data is saved in the browser with `localStorage`.
+
+Skins, combo words, and combo effect presets can be tuned in `assets/js/config.js`.
+
+For the best mobile-app feel, open the hosted link on your phone and use the browser's **Add to Home Screen** option. The installed app runs standalone and caches the static files for offline launch.
 
 ## License
 
