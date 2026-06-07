@@ -179,7 +179,7 @@ function setupCopyrightEasterEgg() {
     copyrightTapCount += 1;
     copyright.classList.add('armed');
 
-    if (copyrightTapCount >= 5) {
+    if (copyrightTapCount >= 6) {
       unlockSecretSkin();
       copyrightTapCount = 0;
       return;
